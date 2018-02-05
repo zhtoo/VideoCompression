@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/video_container"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="#FFF"
+              android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="58dp">
+
+        <FrameLayout
+            android:onClick="returnClass"
+            android:layout_width="58dp"
+            android:layout_height="58dp">
+
+            <ImageView
+                android:layout_width="9dp"
+                android:layout_height="15.5dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_arrow_left"/>
+
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="本地视频"
+            android:textColor="#222222"
+            android:textSize="18sp"/>
+
+
+        <FrameLayout
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_alignParentRight="true">
+
+            <TextView
+                android:onClick="pick"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="选择"/>
+
+        </FrameLayout>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+          android:background="#EEEEEE"
+          android:layout_height="1dp"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_marginTop="1dp"
+        android:id="@+id/video_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>
+
+</LinearLayout>
