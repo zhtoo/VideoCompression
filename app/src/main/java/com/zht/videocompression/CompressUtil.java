@@ -35,7 +35,7 @@ public class CompressUtil {
                     Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE
             }, REQUEST_PERMISSION);
         } else {
-            // test compress time
+            // compress time
             // you need replace to your source
             long startTime = System.currentTimeMillis();
             int ret = FFmpegNativeBridge.runCommand(new String[]{"ffmpeg",
@@ -43,7 +43,7 @@ public class CompressUtil {
                     "-y",
                     "-c:v", "libx264",
                     "-c:a", "aac",
-//                    "-vf", "scale=960:-2",
+                    "-vf", "scale=-2:720",
                     "-preset", "ultrafast",
                   //  "-b:v", "450k",
                     "-b:a", "192k",
@@ -52,7 +52,7 @@ public class CompressUtil {
             });
             System.out.println("ret: " + ret + ", time: " + (System.currentTimeMillis() - startTime));
 
-            return "耗时："+(System.currentTimeMillis() - startTime)+"ms";
+            return "elapsed time："+(System.currentTimeMillis() - startTime)+"ms";
         }
         return null;
     }

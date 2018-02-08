@@ -1,6 +1,3 @@
-//
-// Created by 戚耿鑫 on 2017/6/17.
-//
 
 #include <jni.h>
 #include "ffmpeg.h"
