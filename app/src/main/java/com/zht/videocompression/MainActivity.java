@@ -1,9 +1,12 @@
 package com.zht.videocompression;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +14,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.zht.ffmpeg.FFmpegNativeBridge;
 import com.zht.videopick.VideoConfig;
 import com.zht.videopick.VideoListActivity;
 
@@ -24,6 +28,24 @@ public class MainActivity extends AppCompatActivity {
     private EditText videoPath;
     private EditText savePath;
 
+    private static final int REQUEST_PERMISSION = 100;
+
+    private static final int HANDLER_COMMAND = 101;
+
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == HANDLER_COMMAND) {
+                if (waitingDialog != null && waitingDialog.isShowing()) {
+                    waitingDialog.dismiss();
+                    Toast.makeText(MainActivity.this, "压缩后文件大小", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        }
+    };
+
+    private ProgressDialog waitingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,26 +60,38 @@ public class MainActivity extends AppCompatActivity {
         checkPermission();
 
     }
-
+    private void showWaitingDialog() {
+        if (waitingDialog == null) {
+            waitingDialog = new ProgressDialog(MainActivity.this);
+            waitingDialog.setTitle("视频压缩中...");
+            waitingDialog.setMessage("请等待中...");
+            waitingDialog.setIndeterminate(true);
+            waitingDialog.setCancelable(false);
+        }
+        waitingDialog.show();
+    }
 
     public void pickVideo(View view) {
         startActivityForResult(new Intent(this, VideoListActivity.class), VideoConfig.PICK_VIDEO_REQUEST);
     }
 
-
     public void startCompress(View view) {
+        final String videoUrl = videoPath.getText().toString().trim();
+        final String saveUrl = savePath.getText().toString().trim();
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE
+            }, REQUEST_PERMISSION);
+        } else {
+            showWaitingDialog();
 
-        String videoUrl = videoPath.getText().toString().trim();
-        String saveUrl = savePath.getText().toString().trim();
-        String time = CompressUtil.doCompress(this, videoUrl, saveUrl);
-
-        File file = new File(saveUrl);
-        long length = file.length();
-        Toast.makeText(this, "压缩后文件大小"+length/1024/1024+"M", Toast.LENGTH_SHORT).show();
-
-
+            new CompressThread(videoUrl, saveUrl,
+                    handler, HANDLER_COMMAND).start();
+        }
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -77,7 +111,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
 
     /**
      * 权限检测
@@ -107,6 +140,5 @@ public class MainActivity extends AppCompatActivity {
 
             }
     }
-
 
 }

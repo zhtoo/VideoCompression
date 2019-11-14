@@ -19,12 +19,6 @@ public class CompressUtil {
 
     private static final int REQUEST_PERMISSION = 100;
 
-    /**
-     * Compress video
-     * @param activity
-     * @param videoPath
-     * @param savePath
-     */
     public static String doCompress(Activity activity,String videoPath,String savePath) {
         //check permission
         if (ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -35,8 +29,7 @@ public class CompressUtil {
                     Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE
             }, REQUEST_PERMISSION);
         } else {
-            // compress time
-            // you need replace to your source
+
             long startTime = System.currentTimeMillis();
             int ret = FFmpegNativeBridge.runCommand(new String[]{"ffmpeg",
                     "-i", videoPath,//"/storage/emulated/0/AzRecorderFree/2017_10_13_14_57_59.mp4",
